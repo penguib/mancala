@@ -1,4 +1,6 @@
 local board = require("board")
+local bot   = require("bot")
+local util  = require("util")
 
 board.setup()
 
@@ -21,14 +23,10 @@ while board.checkactive() do
 
     board.update()
 
+    util.wait(1)
+
     ::botmove::
-
-    io.write("# ")
-    local bmove = io.read()
-    if not board.move(bmove) then
-        goto botmove
-    end
-
+    bot.move()
     if board.data.turn == 1 then
         goto botmove
     end

@@ -13,7 +13,6 @@ function util.formatnumber(x)
     return tostring(x)
 end
 
-
 ---
 ---Finds the next nearest multiple of `m` looking forward.
 ---If `x = 9, m = 5` -> 10 
@@ -37,5 +36,6 @@ function util.wait(x)
     local s = tonumber(os.clock() + x)
     while (os.clock() < s) do end
 end
+
 
 return util

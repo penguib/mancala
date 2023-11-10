@@ -28,7 +28,6 @@ board.data = {
         pockets = {},
     },
     turn = 0, -- 0 = user, 1 = bot
-    active = true,
 }
 
 ---
@@ -119,18 +118,24 @@ function board.otherside()
 end
 
 ---
----Checks if all pebbles have been captured and sets the active setting accordingly.
+---Checks if all pebbles on one side have been captured.
 ---
 ---@return boolean
 ---@nodiscard
 function board.checkactive()
     local a = board.getPlayerFromTurn()
     local b = board.otherside()
+    local ac = 0
+    local bc = 0
+
     for i = 1, board.settings.pockets, 1 do
-        if a.pockets[i] > 0 then return true end
-        if b.pockets[board.settings.pockets - i + 1] > 0 then return true end
+        ac = ac + a.pockets[i]
     end
-    return false
+    for i = 1, board.settings.pockets, 1 do
+        bc = bc + b.pockets[i]
+    end
+
+    return not (ac == 0 or bc == 0)
 end
 
 ---
@@ -210,6 +215,13 @@ function board.move(m)
 
     if not anotherturn then
         board.data.turn = 1 - board.data.turn
+    end
+
+    if not board.checkactive() then
+        for i = 1, board.settings.pockets, 1 do
+            turn.score = turn.score + turn.pockets[i]
+            other.score = other.score + other.pockets[i]
+        end
     end
 
     return true
