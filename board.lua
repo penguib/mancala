@@ -9,23 +9,25 @@ local board = {}
 board.settings = {
     colors = {
         user = "\27[33m",
+        white = "\27[37m",
         bot = "\27[34m",
         clear = "\27[0m"
     },
-    pocketval = 4,
+    pocketval = 1,
     pockets = 6,
     movedelay = 1,
+    debug = true, -- Debug allows me to manually set each pocket values
 }
 
 ---@alias player table
 board.data = {
     user = {
         score = 0,
-        pockets = {},
+        pockets = {0, 0, 1, 3, 4, 5},
     },
     bot = {
         score = 0,
-        pockets = {},
+        pockets = {2, 2, 2, 5, 3, 2},
     },
     turn = 0, -- 0 = user, 1 = bot
 }
@@ -34,6 +36,7 @@ board.data = {
 ---Sets the board to the default values.
 ---
 function board.setup()
+    if debug then return end
     for _ = 1, board.settings.pockets, 1 do
         table.insert(board.data.user.pockets, board.settings.pocketval)
         table.insert(board.data.bot.pockets, board.settings.pocketval)
@@ -59,24 +62,24 @@ function board.update()
     local data = board.data
     local colors = settings.colors
 
-    local b = "+-------------------+-------------------+\n"
+    local b = colors.white .. "+-------------------+-------------------+\n"
     b = b .. "|   Bot score: 00   |  Player score: 00 |\n"
     b = b .. string.rep("+----", settings.pockets + 2)
     b = b .. "+\n"
 
     b = b .. "|    "
     for i = #data.bot.pockets, 1, -1 do
-        b = b .. "| " .. colors.bot .. util.formatnumber(data.bot.pockets[i]) .. colors.clear .. " "
+        b = b .. "| " .. colors.bot .. util.formatnumber(data.bot.pockets[i]) .. colors.white.. " "
     end
     b = b .. "|    |\n"
 
-    b = b .. "| " .. colors.bot .. util.formatnumber(data.bot.score) .. colors.clear .. " |"
+    b = b .. "| " .. colors.bot .. util.formatnumber(data.bot.score) .. colors.white.. " |"
     b = b .. string.rep("----+", settings.pockets - 1)
-    b = b .. "----| " .. colors.user .. util.formatnumber(data.user.score) .. colors.clear  .. " |\n"
+    b = b .. "----| " .. colors.user .. util.formatnumber(data.user.score) .. colors.white.. " |\n"
 
     b = b .. "|    "
     for i = 1, #data.user.pockets, 1 do
-        b = b .. "| " .. colors.user .. util.formatnumber(data.user.pockets[i]) .. colors.clear .. " "
+        b = b .. "| " .. colors.user .. util.formatnumber(data.user.pockets[i]) .. colors.white.. " "
     end
     b = b .. "|    |\n"
 
@@ -189,7 +192,7 @@ function board.move(m)
             if i == pebbles and other.pockets[pindex] - 1 == 0 then
                 local o = board.settings.pockets - pindex + 1
                 if turn.pockets[o] > 0 then
-                    turn.score = turn.score + other.pockets[o] + 1
+                    turn.score = turn.score + turn.pockets[o] + 1
                     other.pockets[pindex] = 0
                     turn.pockets[o] = 0
                 end
